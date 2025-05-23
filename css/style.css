@@ -1,0 +1,365 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.periodic-table-container {
+    display: grid;
+    grid-template-columns: repeat(18, minmax(60px, 1fr));
+    grid-template-rows: repeat(10, minmax(60px, 1fr));
+    gap: 5px;
+    padding: 20px;
+    max-width: 1600px;
+    width: 95%;
+    overflow: auto;
+}
+
+.element-cell {
+    border: 1px solid #0d0d1a;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    text-align: center;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    position: relative;
+    cursor: pointer;
+    min-height: 60px;
+}
+
+.element-cell .atomic-number {
+    font-size: 10px;
+    color: rgba(0,0,0,0.7);
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+.element-cell .symbol {
+    font-size: clamp(16px, 3vw, 20px);
+    font-weight: bold;
+    color: #101020;
+}
+
+.element-cell .name {
+    font-size: clamp(8px, 2vw, 10px);
+    color: rgba(0,0,0,0.8);
+    word-break: break-word;
+    line-height: 1.1;
+}
+
+.tooltip {
+    position: absolute;
+    visibility: hidden;
+    background-color: rgba(20, 20, 40, 0.95);
+    color: #f0f0f0;
+    border: 1px solid #f72585;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 14px;
+    max-width: 300px;
+    z-index: 10000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    pointer-events: none;
+}
+
+.tooltip hr {
+    border-color: #f72585;
+    margin: 5px 0;
+    border-style: solid;
+    border-width: 1px 0 0 0;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #2c2c54;
+    padding: 0;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: left;
+    position: relative;
+    width: clamp(350px, 85vw, 900px);
+    height: clamp(450px, 90vh, 750px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #40407a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    color: #fca311;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.modal-close-button {
+    background: transparent;
+    border: none;
+    color: #f0f0f0;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.main-tab-container {
+    display: flex;
+    padding: 10px 20px 0px 20px;
+    border-bottom: 1px solid #40407a;
+    flex-shrink: 0;
+}
+
+.main-tab-button {
+    padding: 10px 15px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: #a0a0c0;
+    cursor: pointer;
+    font-size: 1em;
+    margin-right: 10px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.main-tab-button.active {
+    color: #e0e0e0;
+    border-bottom-color: #fca311;
+    font-weight: bold;
+}
+
+.main-tab-content-container {
+    overflow: hidden; 
+    flex-grow: 1;
+    position: relative;
+    display: flex; 
+}
+
+.main-tab-panel {
+    display: none; /* Initially hidden */
+    width: 100%; 
+    height: 100%; 
+    overflow-y: auto; 
+    flex-direction: column; /* Default for panels like 3D Model */
+}
+
+.main-tab-panel.active {
+    display: flex; /* Show active panel */
+}
+
+/* Specific panels that don't need flex column and should scroll their direct content */
+#main-tab-panel-info, 
+#main-tab-panel-gallery {
+    display: none; /* Overridden by .active to block or grid below */
+    padding: 20px;
+    flex-direction: unset; /* Reset flex direction if set by .main-tab-panel */
+}
+#main-tab-panel-info.active {
+    display: block;
+}
+#main-tab-panel-gallery.active {
+    display: grid; /* Use grid when active */
+}
+
+
+.inner-3d-tab-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: #1e1e3f; 
+    flex-shrink: 0;
+    border-radius: 25px; 
+    margin: 10px auto; 
+    width: fit-content; 
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+.inner-3d-tab-button {
+    padding: 8px 20px;
+    border: none; 
+    background-color: transparent;
+    color: #a0a0c0; 
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    border-radius: 20px; 
+    margin: 0 3px;
+}
+
+.inner-3d-tab-button.active {
+    background-color: #fca311;
+    color: #1a1a2e;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(252, 163, 17, 0.5);
+}
+
+.inner-3d-tab-content-container {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden; 
+    display: flex; /* Added to manage inner panel visibility */
+    width: 100%;
+    height: 100%;
+}
+
+.inner-3d-tab-panel {
+    display: none; /* Initially hidden */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.05); 
+    align-items: center;
+    justify-content: center;
+}
+.inner-3d-tab-panel.active {
+    display: flex; /* Show active inner panel */
+}
+
+#threejs-procedural-view, #model-viewer-container {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+}
+
+model-viewer {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+}
+
+#main-tab-panel-info h3 {
+    color: #ade8f4;
+    border-bottom: 1px solid #40407a;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+#main-tab-panel-info .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+#main-tab-panel-info .detail-item {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+#main-tab-panel-info .detail-item strong {
+    color: #fca311;
+}
+#main-tab-panel-info h4 {
+    color: #ade8f4;
+    margin-top: 20px;
+    border-top: 1px solid #40407a;
+    padding-top: 15px;
+    margin-bottom: 10px;
+}
+#main-tab-panel-info p {
+    line-height: 1.7;
+    text-align: justify;
+    margin-top: 0;
+}
+
+#main-tab-panel-gallery {
+    /* display: grid; already set above when active */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+    gap: 15px;
+    /* padding: 20px; already set above */
+}
+#main-tab-panel-gallery figure {
+    margin: 0;
+    text-align: center;
+    border: 1px solid #40407a;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.1);
+    cursor: pointer; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#main-tab-panel-gallery figure img {
+    max-width: 100%;
+    max-height: 120px; 
+    object-fit: contain; 
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 8px;
+}
+#main-tab-panel-gallery figure figcaption {
+    font-size: 0.8em; 
+    color: #bbb;
+    margin-top: auto; 
+}
+#main-tab-panel-gallery .no-visuals-message,
+#model-viewer-container .no-visuals-message { /* Added for model viewer no-model message */
+    color: #aaa;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+    grid-column: 1 / -1; 
+}
+.image-error-message {
+    color: #ff6b6b;
+    padding: 10px;
+    border: 1px dashed #ff6b6b;
+    text-align: center;
+}
+
+.image-preview-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(3px);
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    z-index: 10001; 
+    cursor: pointer; 
+}
+.image-preview-modal-overlay.active {
+    display: flex;
+}
+.image-preview-modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+}

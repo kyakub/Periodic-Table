@@ -64,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePreviewOverlay.classList.remove('active');
     });
 
+    const copyrightFooter = document.createElement('div');
+    copyrightFooter.className = 'copyright-footer';
+    copyrightFooter.innerHTML = `Developed in ${new Date().getFullYear()}, by Kamran Yakub. This project is open source and available under the MIT License.`;
+    body.appendChild(copyrightFooter);
+
+
     let activeMainTabButton = null;
     let activeMainTabPanel = null;
     let activeInner3DTabButton = null;
@@ -252,8 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
             controls.dampingFactor = 0.05;
             controls.minDistance = 1;
             controls.maxDistance = 100;
-        } else {
-             targetContainer.insertAdjacentHTML('beforeend', "<p style='position:absolute; top:10px; left:10px; color:orange; background:rgba(0,0,0,0.5); padding:5px; border-radius:3px; font-size:0.8em;'>OrbitControls not available.</p>");
         }
         
         const ambLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -536,7 +540,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const defaultMainTab = document.getElementById('main-tab-button-3d-model');
         if (defaultMainTab && !activeMainTabButton) {
-             // No initial click as modal is hidden
         }
     },0);
 });

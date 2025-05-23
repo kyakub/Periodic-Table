@@ -4,7 +4,7 @@ body, html {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Work Sans", sans-serif;
     background-color: #1a1a2e;
     color: #e0e0e0;
     display: flex;
@@ -16,8 +16,8 @@ body, html {
     display: grid;
     grid-template-columns: repeat(18, minmax(60px, 1fr));
     grid-template-rows: repeat(10, minmax(60px, 1fr));
-    gap: 5px;
-    padding: 20px;
+    gap: 1px;
+    padding: 40px;
     max-width: 1600px;
     width: 95%;
     overflow: auto;
@@ -44,19 +44,23 @@ body, html {
     position: absolute;
     top: 3px;
     left: 3px;
+    font-family: "Work Sans", sans-serif;
 }
 
 .element-cell .symbol {
-    font-size: clamp(16px, 3vw, 20px);
-    font-weight: bold;
+    font-family: "Noto Sans Display", sans-serif;
+    font-size: clamp(18px, 3vw, 22px);
+    font-weight: 600;
     color: #101020;
 }
 
 .element-cell .name {
-    font-size: clamp(8px, 2vw, 10px);
+    font-size: clamp(9px, 2vw, 11px);
     color: rgba(0,0,0,0.8);
     word-break: break-word;
     line-height: 1.1;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 300;
 }
 
 .tooltip {
@@ -67,7 +71,8 @@ body, html {
     border: 1px solid #f72585;
     border-radius: 8px;
     padding: 15px;
-    font-size: 14px;
+    font-size: 13px;
+    font-family: "Work Sans", sans-serif;
     max-width: 300px;
     z-index: 10000;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -111,6 +116,7 @@ body, html {
     display: flex;
     flex-direction: column;
     overflow: hidden; 
+    font-family: "Work Sans", sans-serif;
 }
 
 .modal-header {
@@ -123,9 +129,11 @@ body, html {
 }
 
 .modal-title {
+    font-family: "Noto Sans Display", sans-serif;
+    font-weight: 700;
     color: #fca311;
     margin: 0;
-    font-size: 1.5em;
+    font-size: 1.6em;
 }
 
 .modal-close-button {
@@ -152,6 +160,8 @@ body, html {
     background: transparent;
     color: #a0a0c0;
     cursor: pointer;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 500;
     font-size: 1em;
     margin-right: 10px;
     transition: color 0.2s, border-color 0.2s;
@@ -160,7 +170,7 @@ body, html {
 .main-tab-button.active {
     color: #e0e0e0;
     border-bottom-color: #fca311;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .main-tab-content-container {
@@ -171,29 +181,28 @@ body, html {
 }
 
 .main-tab-panel {
-    display: none; /* Initially hidden */
+    display: none; 
     width: 100%; 
     height: 100%; 
     overflow-y: auto; 
-    flex-direction: column; /* Default for panels like 3D Model */
+    flex-direction: column; 
 }
 
 .main-tab-panel.active {
-    display: flex; /* Show active panel */
+    display: flex; 
 }
 
-/* Specific panels that don't need flex column and should scroll their direct content */
 #main-tab-panel-info, 
 #main-tab-panel-gallery {
-    display: none; /* Overridden by .active to block or grid below */
+    display: none; 
     padding: 20px;
-    flex-direction: unset; /* Reset flex direction if set by .main-tab-panel */
+    flex-direction: unset; 
 }
 #main-tab-panel-info.active {
     display: block;
 }
 #main-tab-panel-gallery.active {
-    display: grid; /* Use grid when active */
+    display: grid; 
 }
 
 
@@ -215,6 +224,8 @@ body, html {
     background-color: transparent;
     color: #a0a0c0; 
     cursor: pointer;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 500;
     font-size: 0.9em;
     transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
     border-radius: 20px; 
@@ -224,7 +235,7 @@ body, html {
 .inner-3d-tab-button.active {
     background-color: #fca311;
     color: #1a1a2e;
-    font-weight: bold;
+    font-weight: 700;
     box-shadow: 0 0 8px rgba(252, 163, 17, 0.5);
 }
 
@@ -232,13 +243,13 @@ body, html {
     position: relative;
     flex-grow: 1;
     overflow: hidden; 
-    display: flex; /* Added to manage inner panel visibility */
+    display: flex; 
     width: 100%;
     height: 100%;
 }
 
 .inner-3d-tab-panel {
-    display: none; /* Initially hidden */
+    display: none; 
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.05); 
@@ -246,7 +257,7 @@ body, html {
     justify-content: center;
 }
 .inner-3d-tab-panel.active {
-    display: flex; /* Show active inner panel */
+    display: flex; 
 }
 
 #threejs-procedural-view, #model-viewer-container {
@@ -262,6 +273,8 @@ model-viewer {
 }
 
 #main-tab-panel-info h3 {
+    font-family: "Noto Sans Display", sans-serif;
+    font-weight: 600;
     color: #ade8f4;
     border-bottom: 1px solid #40407a;
     padding-bottom: 8px;
@@ -271,16 +284,20 @@ model-viewer {
 #main-tab-panel-info .details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
+    gap: 5px;
 }
 #main-tab-panel-info .detail-item {
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     line-height: 1.6;
+    font-size: 0.9em;
 }
 #main-tab-panel-info .detail-item strong {
     color: #fca311;
+    font-weight: 600;
 }
 #main-tab-panel-info h4 {
+    font-family: "Noto Sans Display", sans-serif;
+    font-weight: 600;
     color: #ade8f4;
     margin-top: 20px;
     border-top: 1px solid #40407a;
@@ -291,16 +308,16 @@ model-viewer {
     line-height: 1.7;
     text-align: justify;
     margin-top: 0;
+    font-size: 0.9em;
+    padding-bottom: 40px;
 }
 
 #main-tab-panel-gallery {
-    /* display: grid; already set above when active */
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
     gap: 15px;
-    /* padding: 20px; already set above */
 }
 #main-tab-panel-gallery figure {
-    margin: 0;
+    margin: 0 0 6px 0;
     text-align: center;
     border: 1px solid #40407a;
     border-radius: 5px;
@@ -323,9 +340,11 @@ model-viewer {
     font-size: 0.8em; 
     color: #bbb;
     margin-top: auto; 
+    font-family: "Work Sans", sans-serif;
+    font-weight: 300;
 }
 #main-tab-panel-gallery .no-visuals-message,
-#model-viewer-container .no-visuals-message { /* Added for model viewer no-model message */
+#model-viewer-container .no-visuals-message { 
     color: #aaa;
     text-align: center;
     width: 100%;
@@ -362,4 +381,16 @@ model-viewer {
     object-fit: contain;
     border-radius: 5px;
     box-shadow: 0 0 30px rgba(255,255,255,0.2);
+}
+
+.copyright-footer {
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    font-size: 11px;
+    color: rgba(224, 224, 224, 0.4); 
+    font-family: "Work Sans", sans-serif;
+    font-weight: 300;
+    z-index: 5; 
+    pointer-events: none; 
 }

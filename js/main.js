@@ -11,6 +11,43 @@ document.addEventListener('DOMContentLoaded', () => {
         "unknown, probably post-transition metal": "#e63946", "unknown, predicted to be noble gas": "#ade8f4",
         "unknown, probably metalloid": "#7209b7"
     };
+    
+    const controlsArea = document.createElement('div');
+    controlsArea.className = 'controls-area';
+
+    const categoryDropdownContainer = document.createElement('div');
+    categoryDropdownContainer.className = 'category-dropdown-container';
+    
+    const categoryDropdownButton = document.createElement('button');
+    categoryDropdownButton.className = 'category-dropdown-button';
+    categoryDropdownButton.textContent = 'All Categories'; // Updated text
+    
+    const categoryDropdownPanel = document.createElement('div');
+    categoryDropdownPanel.className = 'category-dropdown-panel';
+
+    categoryDropdownContainer.appendChild(categoryDropdownButton);
+    categoryDropdownContainer.appendChild(categoryDropdownPanel);
+    controlsArea.appendChild(categoryDropdownContainer);
+
+    const controlsDivider = document.createElement('div');
+    controlsDivider.className = 'controls-divider';
+    controlsArea.appendChild(controlsDivider);
+
+    const searchControls = document.createElement('div');
+    searchControls.className = 'search-controls';
+
+    const searchInput = document.createElement('input');
+    searchInput.type = 'search';
+    searchInput.placeholder = 'Search by Name, Symbol, or Number...';
+    searchControls.appendChild(searchInput);
+
+    const resetButton = document.createElement('button');
+    resetButton.textContent = 'Reset All';
+    searchControls.appendChild(resetButton);
+    controlsArea.appendChild(searchControls);
+    
+    body.insertBefore(controlsArea, body.firstChild);
+
 
     const periodicTableContainer = document.createElement('div');
     periodicTableContainer.className = 'periodic-table-container';
@@ -78,6 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scene, camera, renderer, controls, atomGroup, animationFrameId;
     let currentRendererCanvasId = null;
+    let allElementCells = [];
+    let uniqueCategories = [];
+    let selectedCategories = []; 
+
 
     const threeJsContainerProcedural = document.createElement('div');
     threeJsContainerProcedural.id = 'threejs-procedural-view';
@@ -87,6 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const detailsInfoPanelContent = document.createElement('div');
     const galleryPanelContent = document.createElement('div'); 
+
+    categoryDropdownButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        categoryDropdownPanel.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!categoryDropdownContainer.contains(event.target) && categoryDropdownPanel.classList.contains('active')) {
+            categoryDropdownPanel.classList.remove('active');
+        }
+    });
+
 
     function createMainTab(id, labelText, isDefault = false) {
         const button = document.createElement('button');
@@ -445,12 +498,117 @@ document.addEventListener('DOMContentLoaded', () => {
             panelContentElement.appendChild(noVisualsMsg);
         }
     }
+    
+    function updateCategoryDropdownButtonText() {
+        const checkedCategories = Array.from(categoryDropdownPanel.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.dataset.category)
+            .filter(cat => cat !== 'all');
+
+        if (categoryDropdownPanel.querySelector('input[data-category="all"]:checked')) {
+            categoryDropdownButton.textContent = 'All Categories'; 
+        } else if (checkedCategories.length === 0) {
+            categoryDropdownButton.textContent = 'Filter by Category';
+        } else if (checkedCategories.length === 1) {
+            let name = checkedCategories[0];
+            name = name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' ');
+            categoryDropdownButton.textContent = name;
+        } else {
+            categoryDropdownButton.textContent = `Categories (${checkedCategories.length})`;
+        }
+    }
+
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        selectedCategories = Array.from(categoryDropdownPanel.querySelectorAll('input[type="checkbox"]:checked:not([data-category="all"])'))
+                                .map(cb => cb.dataset.category);
+        const allIsChecked = categoryDropdownPanel.querySelector('input[data-category="all"]:checked');
+
+        allElementCells.forEach(cell => {
+            const name = cell.dataset.name || '';
+            const symbol = cell.dataset.symbol || '';
+            const number = cell.dataset.number || '';
+            const category = cell.dataset.category || '';
+
+            const matchesSearch = !searchTerm || name.includes(searchTerm) || symbol.includes(searchTerm) || number === searchTerm;
+            const matchesCategory = allIsChecked || selectedCategories.length === 0 || selectedCategories.includes(category);
+
+            if (matchesSearch && matchesCategory) {
+                cell.classList.remove('dimmed');
+            } else {
+                cell.classList.add('dimmed');
+            }
+        });
+        updateCategoryDropdownButtonText();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        selectedCategories = [];
+        categoryDropdownPanel.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.checked = (cb.dataset.category === 'all');
+        });
+        applyFilters(); 
+    });
+
+    function setupCategoryFilters() {
+        const categories = new Set();
+        elementsData.forEach(el => {
+            if (el.category) categories.add(el.category.toLowerCase().replace(/ /g, '-'));
+        });
+        uniqueCategories = ['all', ...Array.from(categories).sort()];
+
+        categoryDropdownPanel.innerHTML = ''; 
+
+        uniqueCategories.forEach(category => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'category-dropdown-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `cb-${category.replace(/\s+/g, '-')}`;
+            checkbox.dataset.category = category;
+            if (category === 'all') checkbox.checked = true;
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(label);
+            categoryDropdownPanel.appendChild(itemDiv);
+
+            checkbox.addEventListener('change', () => {
+                if (checkbox.dataset.category === 'all') {
+                    const isChecked = checkbox.checked;
+                    categoryDropdownPanel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = isChecked);
+                } else {
+                    const allCheckboxes = Array.from(categoryDropdownPanel.querySelectorAll('input[type="checkbox"]:not([data-category="all"])'));
+                    const allSpecificChecked = allCheckboxes.every(cb => cb.checked);
+                    const allCheckboxEl = categoryDropdownPanel.querySelector('input[data-category="all"]');
+                    if (allCheckboxEl) allCheckboxEl.checked = allSpecificChecked;
+                }
+                applyFilters();
+            });
+        });
+        updateCategoryDropdownButtonText();
+    }
+    setupCategoryFilters();
+
 
     elementsData.forEach(element => {
         const cell = document.createElement('div');
         cell.className = 'element-cell';
         cell.style.gridColumnStart = element.xpos;
         cell.style.gridRowStart = element.ypos;
+        
+        cell.dataset.name = element.name.toLowerCase();
+        cell.dataset.symbol = element.symbol.toLowerCase();
+        cell.dataset.number = String(element.number);
+        cell.dataset.category = (element.category || "unknown").toLowerCase().replace(/ /g, '-');
+
+
         const categoryKey = (element.category || "unknown").toLowerCase().replace(/ /g, ' ').trim();
         const bgColor = categoryColors[categoryKey] || categoryColors["unknown"];
         cell.style.backgroundColor = bgColor;
@@ -493,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.appendChild(symbolDiv);
         cell.appendChild(nameDiv);
         periodicTableContainer.appendChild(cell);
+        allElementCells.push(cell);
 
         cell.addEventListener('click', () => {
             currentModalElement = element; 
@@ -503,12 +662,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if(defaultMainTabButton) {
                  defaultMainTabButton.click(); 
             }
-            populateDetailedInfo(element, detailsInfoPanelContent);
-            populateGalleryTab(element, galleryPanelContent);
+            populateDetailedInfo(currentModalElement, detailsInfoPanelContent);
+            populateGalleryTab(currentModalElement, galleryPanelContent);
         });
     });
-
-    body.appendChild(periodicTableContainer);
 
     function closeModal() {
         modalOverlay.classList.remove('active');
@@ -536,10 +693,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modalOverlay.addEventListener('click', (e) => { 
         if (e.target === modalOverlay) closeModal(); 
     });
-
-    setTimeout(() => {
-        const defaultMainTab = document.getElementById('main-tab-button-3d-model');
-        if (defaultMainTab && !activeMainTabButton) {
-        }
-    },0);
+    
+    const defaultMainTab = document.getElementById('main-tab-button-3d-model');
+    if (defaultMainTab) {
+    }
 });

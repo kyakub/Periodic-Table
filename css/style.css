@@ -8,8 +8,132 @@ body, html {
     background-color: #1a1a2e;
     color: #e0e0e0;
     display: flex;
+    flex-direction: column; 
     align-items: center;
     justify-content: center;
+}
+
+.controls-area {
+    padding: 10px 20px;
+    width: clamp(450px, 90%, 800px); /* Adjusted width for dropdown */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 20px; 
+    margin-bottom: 5px; 
+    background-color: #23233d; 
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.category-dropdown-container {
+    position: relative; /* For dropdown positioning */
+    min-width: 220px; /* Min width for dropdown */
+}
+
+.category-dropdown-button {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #40407a;
+    background-color: #1e1e3f;
+    color: #c0c0d0; /* Lighter than placeholder */
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.9em;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.category-dropdown-button::after { /* Dropdown arrow */
+    content: '▼';
+    font-size: 0.7em;
+    margin-left: 5px;
+}
+
+.category-dropdown-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px); /* Position below the button */
+    left: 0;
+    width: 100%;
+    background-color: #23233d;
+    border: 1px solid #40407a;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    z-index: 1001; /* Above table, below modal */
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+.category-dropdown-panel.active {
+    display: block;
+}
+
+.category-dropdown-item {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    font-size: 0.85em;
+    color: #d0d0e0;
+}
+.category-dropdown-item:hover {
+    background-color: #303050;
+}
+.category-dropdown-item input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #fca311; /* Style checkbox color */
+}
+.category-dropdown-item label {
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.controls-divider {
+    width: 1px;
+    height: 24px; /* Match button padding + border approx */
+    background-color: #40407a;
+    margin: 0 5px; /* Adjust spacing */
+}
+
+
+.search-controls {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1; /* Search input takes remaining space */
+    align-items: center;
+}
+
+.search-controls input[type="search"] {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #40407a;
+    background-color: #1e1e3f;
+    color: #e0e0e0;
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.9em;
+}
+.search-controls input[type="search"]::placeholder {
+    color: #888dac;
+}
+
+.search-controls button { /* For Reset button */
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #fca311;
+    background-color: #fca311;
+    color: #1a1a2e;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+.search-controls button:hover {
+    background-color: #e08e0b;
 }
 
 .periodic-table-container {
@@ -17,10 +141,11 @@ body, html {
     grid-template-columns: repeat(18, minmax(60px, 1fr));
     grid-template-rows: repeat(10, minmax(60px, 1fr));
     gap: 1px;
-    padding: 40px;
+    padding: 15px 20px 50px 20px; 
     max-width: 1600px;
     width: 95%;
     overflow: auto;
+    flex-grow: 1; 
 }
 
 .element-cell {
@@ -32,11 +157,16 @@ body, html {
     align-items: center;
     justify-content: space-around;
     text-align: center;
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, opacity 0.3s ease-out;
     position: relative;
     cursor: pointer;
-    min-height: 60px;
+    min-height: 50px;
 }
+
+.element-cell.dimmed {
+    opacity: 0.25;
+}
+
 
 .element-cell .atomic-number {
     font-size: 10px;
@@ -55,7 +185,7 @@ body, html {
 }
 
 .element-cell .name {
-    font-size: clamp(9px, 2vw, 11px);
+    font-size: clamp(9px, 2vw, 9px);
     color: rgba(0,0,0,0.8);
     word-break: break-word;
     line-height: 1.1;
